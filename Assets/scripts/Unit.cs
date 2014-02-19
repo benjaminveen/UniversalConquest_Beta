@@ -50,25 +50,20 @@ public class Unit : MonoBehaviour
 	
 	// Update is called once per frame
 	public virtual void Update () {	
-		//
+		//rotate when dead
 		if (HP <= 0) {
 			transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
 			transform.renderer.material.color = Color.red;
-			//DestroyObject();
 		}
 	}
 	
 	public virtual void TurnUpdate () {
-		if (actionPoints <= 0) {
-			actionPoints = 2;
-			moving = false;
-			attacking = false;	
-		}
+
 	}
 	void OnMouseDown()
 	{
 		GameManager.instance.currentUnit = this;
-		Debug.Log ("HELLO");
+		GameManager.instance.removeTileHighlights ();
 	}
 	public virtual void TurnOnGUI () 
 	{

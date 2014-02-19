@@ -34,15 +34,9 @@ public class Player {
 	}
 	
 	public virtual void TurnUpdate () {
-		int inactiveCount = 0;
+		//each player has to manually end the turn for now.
 		foreach (Unit unit in units) 
-		{
 			unit.TurnUpdate ();
-			if(unit.actionPoints <= 0)
-				inactiveCount++;
-		}
-		if (inactiveCount == units.Count)
-			GameManager.instance.nextTurn ();
 	}
 	
 	public virtual void TurnOnGUI () {

@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour {
 	public GameObject TilePrefab;
 	public GameObject PlayerUnitPrefab;
 	public GameObject EnemyUnitPrefab;
-	//public GameObject AIUnitPrefab;
 	
 	public int mapSize = 22;
 	
@@ -18,9 +17,9 @@ public class GameManager : MonoBehaviour {
 	public int currentPlayerIndex = 0;
 
 
-	public Unit currentUnit;
-	public Player currentPlayer;
-	List<Unit> allUnits = new List<Unit> ();
+	public Unit currentUnit;//currently selected/highlighted unit
+	public Player currentPlayer;//current player taking actions.
+	List<Unit> allUnits = new List<Unit> ();//all active units on the board.
 
 	void Awake() {
 		instance = this;
@@ -99,14 +98,13 @@ public class GameManager : MonoBehaviour {
 	}
 	
 	public void attackWithCurrentPlayer(Tile destTile) {
-		if (destTile.transform.renderer.material.color != Color.white && !destTile.impassible) {
+		if (destTile.transform.renderer.material.color != Color.white && !destTile.impassible && destTile.gridPosition != currentUnit.gridPosition) {
 			
 			Unit target = null;
 			foreach(Unit u in allUnits)
 				if(u.gridPosition == destTile.gridPosition && !currentPlayer.units.Contains (u))
-					target = u;
-				else
-					Debug.Log ("CANT TARGET FRIENDLY UNITS");
+						target = u;
+					
 
 			if (target != null) {
 								

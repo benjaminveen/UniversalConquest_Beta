@@ -12,7 +12,7 @@ public class PlayerUnit : Unit {
 		//green for currently selected unit
 		//white by default
 		if (GameManager.instance.currentUnit == this) 
-				transform.renderer.material.color = Color.green;
+			transform.renderer.material.color = Color.green;
 		else
 			transform.renderer.material.color = Color.white;
 
@@ -33,8 +33,6 @@ public class PlayerUnit : Unit {
 				}
 			}
 		}
-		
-		//base.TurnUpdate ();
 	}
 	private void displayButtons()
 	{
@@ -72,16 +70,13 @@ public class PlayerUnit : Unit {
 				GameManager.instance.removeTileHighlights();
 			}
 		}
-		
-		//end turn button
-
-		
-		base.TurnOnGUI ();
 	}
 	public override void TurnOnGUI () 
 	{
-		if(actionPoints > 0)
+		if(actionPoints > 0 && HP > 0)
 			displayButtons ();
+
+		//end turn button
 		float buttonHeight = 50;
 		float buttonWidth = 150;
 		Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);		
