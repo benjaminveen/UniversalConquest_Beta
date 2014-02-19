@@ -42,6 +42,15 @@ public class GameManager : MonoBehaviour {
 	void OnGUI () {
 		if (currentUnit != null && currentPlayer.units.Contains (currentUnit)) 
 			currentUnit.TurnOnGUI();
+		//end turn button
+		float buttonHeight = 50;
+		float buttonWidth = 150;
+		Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);		
+		if (GUI.Button(buttonRect, "End Turn")) 
+		{
+			removeTileHighlights ();
+			nextTurn ();
+		}
 	}
 	
 	public void nextTurn() {

@@ -75,18 +75,5 @@ public class PlayerUnit : Unit {
 	{
 		if(actionPoints > 0 && HP > 0)
 			displayButtons ();
-
-		//end turn button
-		float buttonHeight = 50;
-		float buttonWidth = 150;
-		Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);		
-		
-		if (GUI.Button(buttonRect, "End Turn")) {
-			GameManager.instance.removeTileHighlights();
-			actionPoints = 2;
-			moving = false;
-			attacking = false;			
-			GameManager.instance.nextTurn();
-		}
 	}
 }
