@@ -10,6 +10,7 @@ public class Tile : MonoBehaviour {
 	public bool impassible = false;
 	
 	public List<Tile> neighbors = new List<Tile>();
+	private Unit unitOnTile;
 	
 	// Use this for initialization
 	void Start () {
@@ -48,18 +49,9 @@ public class Tile : MonoBehaviour {
 	}
 	
 	void OnMouseEnter() {
-		/*
-		if (GameManager.instance.players[GameManager.instance.currentPlayerIndex].moving) {
-			transform.renderer.material.color = Color.blue;
-		} else if (GameManager.instance.players[GameManager.instance.currentPlayerIndex].attacking) {
-			transform.renderer.material.color = Color.red;
-		}
-		*/
-		//Debug.Log("my position is (" + gridPosition.x + "," + gridPosition.y);
 	}
 	
 	void OnMouseExit() {
-		//transform.renderer.material.color = Color.white;
 	}
 	
 	
@@ -69,11 +61,13 @@ public class Tile : MonoBehaviour {
 		} else if (GameManager.instance.currentUnit.attacking) {
 			GameManager.instance.attackWithCurrentPlayer(this);
 		} else {
-			impassible = impassible ? false : true;
+			/*impassible = impassible ? false : true;
 			if (impassible) 
 				transform.renderer.material.color = new Color(.5f, .5f, 0.0f);
 			else 
-				transform.renderer.material.color = Color.white;
+				transform.renderer.material.color = Color.white;*/
+			if(unitOnTile != null)
+				GameManager.instance.currentUnit = unitOnTile;
 		}
 		
 	}
