@@ -21,12 +21,16 @@ public class GameManager : MonoBehaviour {
 	public Player currentPlayer;//current player taking actions.
 	List<Unit> allUnits = new List<Unit> ();//all active units on the board.
 
+	public float tileScale = 2.5f; //scale of board tiles.
+	Vector3[,] tileCoordinates;
+
 	void Awake() {
 		instance = this;
 	}
 	
 	// Use this for initialization
 	void Start () {		
+		tileCoordinates = new Vector3[mapSize, mapSize];
 		generateMap();
 		generatePlayers();
 		currentPlayer = players [currentPlayerIndex];
@@ -153,28 +157,31 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < mapSize; i++) {
 			List <Tile> row = new List<Tile>();
 			for (int j = 0; j < mapSize; j++) {
-				Tile tile = ((GameObject)Instantiate(TilePrefab, new Vector3(i - Mathf.Floor(mapSize/2),0, -j + Mathf.Floor(mapSize/2)), Quaternion.Euler(new Vector3()))).GetComponent<Tile>();
+				float x = tileScale * ( i - Mathf.Floor(mapSize/2 ));
+				float z = tileScale * (-j + Mathf.Floor(mapSize/2));
+				tileCoordinates[i,j] = new Vector3(x,0,z);
+				Tile tile = ((GameObject)Instantiate(TilePrefab, tileCoordinates[i,j], Quaternion.identity)).GetComponent<Tile>();
 				tile.gridPosition = new Vector2(i, j);
 				row.Add (tile);
 			}
 			map.Add(row);
 		}
 	}
-	
 	void generatePlayers() {
+
 		//add units
 		//team 0
 		Player player = new Player ();
 		List<Unit> units = new List<Unit> ();
 		Unit unit;
 
-		unit = ((GameObject)Instantiate(PlayerUnitPrefab, new Vector3(0 - Mathf.Floor(mapSize/2),1.5f, -0 + Mathf.Floor(mapSize/2)), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
+		unit = ((GameObject)Instantiate(PlayerUnitPrefab, unitCoordinates (0,0), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2(0,0);
 		unit.unitName = "Bob_Team1";
 		units.Add (unit);
 
-		unit = ((GameObject)Instantiate(PlayerUnitPrefab, new Vector3((mapSize-1) - Mathf.Floor(mapSize/2),1.5f, -(mapSize-1) + Mathf.Floor(mapSize/2)), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
-		unit.gridPosition = new Vector2(mapSize-1,mapSize-1);
+		unit = ((GameObject)Instantiate(PlayerUnitPrefab, unitCoordinates (1,1), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
+		unit.gridPosition = new Vector2 (1, 1);
 		unit.unitName = "Brian_Team1";	
 		units.Add (unit);
 
@@ -185,17 +192,22 @@ public class GameManager : MonoBehaviour {
 		player = new Player ();
 		units = new List<Unit> ();
 
-		unit = ((GameObject)Instantiate(EnemyUnitPrefab, new Vector3(6 - Mathf.Floor(mapSize/2),1.5f, -4 + Mathf.Floor(mapSize/2)), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
+		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (6,4), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2(6,4);
 		unit.unitName = "Carl_Team2";
 		units.Add (unit);
 		
-		unit = ((GameObject)Instantiate(EnemyUnitPrefab, new Vector3(5 - Mathf.Floor(mapSize/2),1.5f, -3 + Mathf.Floor(mapSize/2)), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
+		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (5,3), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2(5,3);
 		unit.unitName = "Cameron_Team2";
 		units.Add (unit);
 
 		player.addUnits (units);
 		players.Add (player);
+	}
+	private Vector3 unitCoordinates(int x, int z)
+	{
+		//.25f is just some arbitrary offset used to try and center the unit. it's not working so far.
+		return new Vector3 (tileCoordinates [x, z].x + .25f, 1.5f, tileCoordinates [x, z].z - .25f);
 	}
 }
