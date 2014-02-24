@@ -9,7 +9,13 @@ public class GameManager : MonoBehaviour {
 	public GameObject TilePrefab;
 	public GameObject PlayerUnitPrefab;
 	public GameObject EnemyUnitPrefab;
-	
+
+	//should be same as prefab's scaling
+	//needs to be applied to the position vector of BOTH tiles and units during their generation
+	//consider just shrinking the size of the models
+	public int Xscaling = 1;
+	public int Zscaling = 1;
+
 	public int mapSize = 22;
 	
 	public List <List<Tile>> map = new List<List<Tile>>();
@@ -20,6 +26,12 @@ public class GameManager : MonoBehaviour {
 	public Unit currentUnit;//currently selected/highlighted unit
 	public Player currentPlayer;//current player taking actions.
 	List<Unit> allUnits = new List<Unit> ();//all active units on the board.
+
+	//camera values
+	public int ScrollWidth = 15;
+	public int ScrollSpeed = 25;
+	public int MaxCameraHeight = 100;
+	public int MinCameraHeight = 10;
 
 	void Awake() {
 		instance = this;
@@ -36,6 +48,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		MoveCamera ();
 		currentPlayer.TurnUpdate ();
 	}
 	
@@ -153,7 +166,7 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < mapSize; i++) {
 			List <Tile> row = new List<Tile>();
 			for (int j = 0; j < mapSize; j++) {
-				Tile tile = ((GameObject)Instantiate(TilePrefab, new Vector3(i - Mathf.Floor(mapSize/2),0, -j + Mathf.Floor(mapSize/2)), Quaternion.Euler(new Vector3()))).GetComponent<Tile>();
+				Tile tile = ((GameObject)Instantiate(TilePrefab, new Vector3((i - Mathf.Floor(mapSize/2))*Xscaling,0, (-j + Mathf.Floor(mapSize/2))*Zscaling), Quaternion.Euler(new Vector3()))).GetComponent<Tile>();
 				tile.gridPosition = new Vector2(i, j);
 				row.Add (tile);
 			}
@@ -197,5 +210,59 @@ public class GameManager : MonoBehaviour {
 
 		player.addUnits (units);
 		players.Add (player);
+	}
+
+	private void MoveCamera() {
+		float xpos = Input.mousePosition.x;
+		float ypos = Input.mousePosition.y;
+		float zpos = Input.mousePosition.z;
+		Vector3 movement = new Vector3(0,0,0);
+		bool mouseScroll = false;
+		
+		//horizontal camera movement
+		if(xpos >= 0 && xpos < ScrollWidth) {
+			movement.x -= ScrollSpeed;
+			mouseScroll = true;
+		} else if(xpos <= Screen.width && xpos > Screen.width - ScrollWidth) {
+			movement.x += ScrollSpeed;
+			mouseScroll = true;
+		}
+		
+		//vertical camera movement
+		if(ypos >= 0 && ypos < ScrollWidth) {
+			movement.y -= ScrollSpeed;
+			mouseScroll = true;
+		} else if(ypos <= Screen.height && ypos > Screen.height - ScrollWidth) {
+			movement.y += ScrollSpeed;
+			mouseScroll = true;
+		}
+		
+		//make sure movement is in the direction the camera is pointing
+		//but ignore the vertical tilt of the camera to get sensible scrolling
+		movement = Camera.mainCamera.transform.TransformDirection(movement);
+		movement.y = 0;
+		
+		//away from ground movement
+		movement.y -= ScrollSpeed * Input.GetAxis("Mouse ScrollWheel");
+		
+		//calculate desired camera position based on received input
+		Vector3 origin = Camera.mainCamera.transform.position;
+		Vector3 destination = origin;
+		destination.x += movement.x;
+		destination.y += movement.y;
+		destination.z += movement.z;
+		
+		//limit away from ground movement to be between a minimum and maximum distance
+		if(destination.y > MaxCameraHeight) {
+			destination.y = MaxCameraHeight;
+		} else if(destination.y < MinCameraHeight) {
+			destination.y = MinCameraHeight;
+		}
+		
+		//if a change in position is detected perform the necessary update
+		if(destination != origin) {
+			Camera.mainCamera.transform.position = Vector3.MoveTowards(origin, destination, Time.deltaTime * ScrollSpeed);
+		}
+
 	}
 }
