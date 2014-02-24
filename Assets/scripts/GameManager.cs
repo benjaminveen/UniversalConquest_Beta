@@ -24,6 +24,12 @@ public class GameManager : MonoBehaviour {
 	public float tileScale = 2.5f; //scale of board tiles.
 	Vector3[,] tileCoordinates;
 
+	//camera values
+	public int ScrollWidth = 15;
+	public int ScrollSpeed = 25;
+	public int MaxCameraHeight = 100;
+	public int MinCameraHeight = 10;
+
 	void Awake() {
 		instance = this;
 	}
@@ -40,6 +46,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		MoveCamera ();
 		currentPlayer.TurnUpdate ();
 	}
 	
@@ -209,5 +216,59 @@ public class GameManager : MonoBehaviour {
 	{
 		//.25f is just some arbitrary offset used to try and center the unit. it's not working so far.
 		return new Vector3 (tileCoordinates [x, z].x + .25f, 1.5f, tileCoordinates [x, z].z - .25f);
+	}
+
+	private void MoveCamera() {
+		float xpos = Input.mousePosition.x;
+		float ypos = Input.mousePosition.y;
+		float zpos = Input.mousePosition.z;
+		Vector3 movement = new Vector3(0,0,0);
+		bool mouseScroll = false;
+		
+		//horizontal camera movement
+		if(xpos >= 0 && xpos < ScrollWidth) {
+			movement.x -= ScrollSpeed;
+			mouseScroll = true;
+		} else if(xpos <= Screen.width && xpos > Screen.width - ScrollWidth) {
+			movement.x += ScrollSpeed;
+			mouseScroll = true;
+		}
+		
+		//vertical camera movement
+		if(ypos >= 0 && ypos < ScrollWidth) {
+			movement.y -= ScrollSpeed;
+			mouseScroll = true;
+		} else if(ypos <= Screen.height && ypos > Screen.height - ScrollWidth) {
+			movement.y += ScrollSpeed;
+			mouseScroll = true;
+		}
+		
+		//make sure movement is in the direction the camera is pointing
+		//but ignore the vertical tilt of the camera to get sensible scrolling
+		movement = Camera.mainCamera.transform.TransformDirection(movement);
+		movement.y = 0;
+		
+		//away from ground movement
+		movement.y -= ScrollSpeed * Input.GetAxis("Mouse ScrollWheel");
+		
+		//calculate desired camera position based on received input
+		Vector3 origin = Camera.mainCamera.transform.position;
+		Vector3 destination = origin;
+		destination.x += movement.x;
+		destination.y += movement.y;
+		destination.z += movement.z;
+		
+		//limit away from ground movement to be between a minimum and maximum distance
+		if(destination.y > MaxCameraHeight) {
+			destination.y = MaxCameraHeight;
+		} else if(destination.y < MinCameraHeight) {
+			destination.y = MinCameraHeight;
+		}
+		
+		//if a change in position is detected perform the necessary update
+		if(destination != origin) {
+			Camera.mainCamera.transform.position = Vector3.MoveTowards(origin, destination, Time.deltaTime * ScrollSpeed);
+		}
+		
 	}
 }
