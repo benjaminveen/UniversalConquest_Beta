@@ -88,18 +88,20 @@ public class GameManager : MonoBehaviour {
 			highlightedTiles = TileHighlight.FindHighlight(map[(int)originLocation.x][(int)originLocation.y], distance, allUnits.Where(x => x.gridPosition != originLocation).Select(x => x.gridPosition).ToArray());
 		
 		foreach (Tile t in highlightedTiles) {
-			t.transform.renderer.material.color = highlightColor;
+			t.transform.renderer.material.color = highlightColor; 
 		}
 	}
-	
+	public Color tileColor;
 	public void removeTileHighlights() {
 		for (int i = 0; i < mapSize; i++) {
 			for (int j = 0; j < mapSize; j++) {
-				if (!map[i][j].impassible) map[i][j].transform.renderer.material.color = Color.white;
+				if (!map[i][j].impassible) map[i][j].transform.renderer.material.color = tileColor;
 			}
 		}
 	}
  	
+
+
 	public void moveCurrentPlayer(Tile destTile) {
 		if (destTile.transform.renderer.material.color != Color.white && !destTile.impassible && currentUnit.positionQueue.Count == 0) {
 			removeTileHighlights();
