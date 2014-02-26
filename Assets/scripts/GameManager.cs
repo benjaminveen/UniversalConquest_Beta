@@ -176,6 +176,7 @@ public class GameManager : MonoBehaviour {
 			map.Add(row);
 		}
 	}
+	
 	void generatePlayers() {
 
 		//add units
@@ -183,7 +184,6 @@ public class GameManager : MonoBehaviour {
 		Player player = new Player ();
 		List<Unit> units = new List<Unit> ();
 		Unit unit;
-
 		unit = ((GameObject)Instantiate(PlayerUnitPrefab, unitCoordinates (0,0), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2(0,0);
 		unit.unitName = "Bob_Team1";
@@ -216,8 +216,9 @@ public class GameManager : MonoBehaviour {
 	}
 	private Vector3 unitCoordinates(int x, int z)
 	{
-		//.25f is just some arbitrary offset used to try and center the unit. it's not working so far.
-		return new Vector3 (tileCoordinates [x, z].x + .25f, 1.5f, tileCoordinates [x, z].z - .25f);
+		float tileSize = Mathf.Abs (tileCoordinates [0, 0].x - tileCoordinates [1, 0].x);
+		Debug.Log ("tilesize: " + tileSize);
+		return new Vector3 (tileCoordinates [x, z].x, 1.5f, tileCoordinates [x, z].z);
 	}
 
 	private void MoveCamera() {
