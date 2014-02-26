@@ -6,7 +6,7 @@ public class Player {
 
 
 	public List<Unit> units = new List<Unit> ();
-
+	public string name;
 	
 	void Awake () {
 	}
@@ -28,7 +28,13 @@ public class Player {
 		foreach (Unit unit in units)
 			unit.restoreActionPoints ();
 	}
-	
+	public bool hasLost()
+	{
+		foreach (Unit unit in units)
+			if (unit.HP > 0)
+				return false;
+		return true;
+	}
 	// Update is called once per frame
 	public virtual void Update () {	
 	}

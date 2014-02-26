@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour {
 	public int MaxCameraHeight = 100;
 	public int MinCameraHeight = 10;
 
+	public bool gameActive = true; //if game is still going on.
+
 	void Awake() {
 		instance = this;
 	}
@@ -48,20 +50,41 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 		MoveCamera ();
 		currentPlayer.TurnUpdate ();
+
+		//check for winner
+		foreach (Player p in players)
+			if (p.hasLost ())
+				gameActive = false;
+	}
+	void displayWinner()
+	{
+		string winner = "";
+		foreach(Player p in players)
+			if(!p.hasLost())
+				winner = p.name;
+		GUI.Label(new Rect(10f, 10f, 100f, 100f), "" + winner + " has won!" );
 	}
 	
 	void OnGUI () {
-		if (currentUnit != null && currentPlayer.units.Contains (currentUnit)) 
-			currentUnit.TurnOnGUI();
-		//end turn button
-		float buttonHeight = 50;
-		float buttonWidth = 150;
-		Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);		
-		if (GUI.Button(buttonRect, "End Turn")) 
+		if (gameActive) 
 		{
-			removeTileHighlights ();
-			nextTurn ();
+			if (currentUnit != null && currentPlayer.units.Contains (currentUnit)) 
+				currentUnit.TurnOnGUI();
+			//end turn button
+			float buttonHeight = 50;
+			float buttonWidth = 150;
+			Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);	
+			
+			GUI.Label(new Rect(10f, 10f, 100f, 100f), "Player " + currentPlayerIndex + "'s turn");
+			//GUI.TextArea
+			if (GUI.Button(buttonRect, "End Turn")) 
+			{
+				removeTileHighlights ();
+				nextTurn ();
+			}
 		}
+		else
+			displayWinner ();
 	}
 	
 	public void nextTurn() {
@@ -71,7 +94,7 @@ public class GameManager : MonoBehaviour {
 		else 
 			currentPlayerIndex = 0;
 		currentPlayer = players [currentPlayerIndex];
-		Debug.Log ("Now it's player " + currentPlayerIndex + " turn");
+		Debug.Log ("Now it's player " + currentPlayer.name + "'s turn");
 	}
 
 	public void highlightTilesAt(Vector2 originLocation, Color highlightColor, int distance) {
@@ -103,7 +126,7 @@ public class GameManager : MonoBehaviour {
 
 
 	public void moveCurrentPlayer(Tile destTile) {
-		if (destTile.transform.renderer.material.color != Color.white && !destTile.impassible && currentUnit.positionQueue.Count == 0) {
+		if (destTile.transform.renderer.material.color != tileColor && !destTile.impassible && currentUnit.positionQueue.Count == 0) {
 			removeTileHighlights();
 			currentUnit.moving = false;
 			foreach(Tile t in TilePathFinder.FindPath
@@ -125,10 +148,10 @@ public class GameManager : MonoBehaviour {
 			Unit target = null;
 			foreach(Unit u in allUnits)
 				if(u.gridPosition == destTile.gridPosition && !currentPlayer.units.Contains (u))
-						target = u;
+					target = u;
 					
 
-			if (target != null) {
+			if (target != null && target.HP > 0) {
 								
 				//Debug.Log ("p.x: " + players[currentPlayerIndex].gridPosition.x + ", p.y: " + players[currentPlayerIndex].gridPosition.y + " t.x: " + target.gridPosition.x + ", t.y: " + target.gridPosition.y);
 				if (currentUnit.gridPosition.x >= target.gridPosition.x - 1 && currentUnit.gridPosition.x <= target.gridPosition.x + 1 &&
@@ -186,16 +209,17 @@ public class GameManager : MonoBehaviour {
 		Unit unit;
 		unit = ((GameObject)Instantiate(PlayerUnitPrefab, unitCoordinates (0,0), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2(0,0);
-		unit.unitName = "Bob_Team1";
+		unit.unitName = "Bob";
 		units.Add (unit);
 
 		unit = ((GameObject)Instantiate(PlayerUnitPrefab, unitCoordinates (1,1), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2 (1, 1);
-		unit.unitName = "Brian_Team1";	
+		unit.unitName = "Bobbert";	
 		units.Add (unit);
 
 		player.addUnits (units);
 		players.Add(player);
+		player.name = "PLAYER 0";
 
 		//team 1
 		player = new Player ();
@@ -203,16 +227,17 @@ public class GameManager : MonoBehaviour {
 
 		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (6,4), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2(6,4);
-		unit.unitName = "Carl_Team2";
+		unit.unitName = "Carl";
 		units.Add (unit);
 		
 		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (5,3), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
 		unit.gridPosition = new Vector2(5,3);
-		unit.unitName = "Cameron_Team2";
+		unit.unitName = "Carlton";
 		units.Add (unit);
 
 		player.addUnits (units);
 		players.Add (player);
+		player.name = "PLAYER 1";
 	}
 	private Vector3 unitCoordinates(int x, int z)
 	{
