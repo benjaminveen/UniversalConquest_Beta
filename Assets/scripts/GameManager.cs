@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour {
 
 	public float tileScale = 2.5f; //scale of board tiles.
 	Vector3[,] tileCoordinates;
+	public Color tileColor;
 
 	//camera values
 	public int ScrollWidth = 15;
@@ -50,11 +51,20 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 		MoveCamera ();
 		currentPlayer.TurnUpdate ();
-
+		//deselect unit
+		if (Input.GetMouseButtonDown (1)) 
+		{
+			currentUnit = null;
+			removeTileHighlights ();
+		}
 		//check for winner
 		foreach (Player p in players)
 			if (p.hasLost ())
 				gameActive = false;
+
+		//end turn with spacebar
+		if (Input.GetKeyDown ("space"))
+			nextTurn ();
 	}
 	void displayWinner()
 	{
@@ -67,28 +77,31 @@ public class GameManager : MonoBehaviour {
 	
 	void OnGUI () {
 		if (gameActive) 
-		{
-			if (currentUnit != null && currentPlayer.units.Contains (currentUnit)) 
-				currentUnit.TurnOnGUI();
-			//end turn button
-			float buttonHeight = 50;
-			float buttonWidth = 150;
-			Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);	
-			
-			GUI.Label(new Rect(10f, 10f, 100f, 100f), "Player " + currentPlayerIndex + "'s turn");
-			//GUI.TextArea
-			if (GUI.Button(buttonRect, "End Turn")) 
-			{
-				removeTileHighlights ();
-				nextTurn ();
-			}
-		}
+			displayHud ();
 		else
 			displayWinner ();
+	}
+	void displayHud()
+	{
+		if (currentUnit != null && currentPlayer.units.Contains (currentUnit)) 
+			currentUnit.TurnOnGUI();
+		//end turn button
+		float buttonHeight = 50;
+		float buttonWidth = 150;
+		Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 1, buttonWidth, buttonHeight);	
+		
+		GUI.Label(new Rect(10f, 10f, 100f, 100f), "Player " + currentPlayerIndex + "'s turn");
+		//GUI.TextArea
+		if (GUI.Button(buttonRect, "End Turn")) 
+		{
+			removeTileHighlights ();
+			nextTurn ();
+		}
 	}
 	
 	public void nextTurn() {
 		currentPlayer.restoreActionPoints ();
+		removeTileHighlights ();
 		if (currentPlayerIndex + 1 < players.Count) 
 			currentPlayerIndex++;
 		else 
@@ -114,7 +127,7 @@ public class GameManager : MonoBehaviour {
 			t.transform.renderer.material.color = highlightColor; 
 		}
 	}
-	public Color tileColor;
+
 	public void removeTileHighlights() {
 		for (int i = 0; i < mapSize; i++) {
 			for (int j = 0; j < mapSize; j++) {
@@ -143,7 +156,7 @@ public class GameManager : MonoBehaviour {
 	}
 	
 	public void attackWithCurrentPlayer(Tile destTile) {
-		if (destTile.transform.renderer.material.color != Color.white && !destTile.impassible && destTile.gridPosition != currentUnit.gridPosition) {
+		if (destTile.transform.renderer.material.color != tileColor && !destTile.impassible && destTile.gridPosition != currentUnit.gridPosition) {
 			
 			Unit target = null;
 			foreach(Unit u in allUnits)
@@ -239,10 +252,10 @@ public class GameManager : MonoBehaviour {
 		players.Add (player);
 		player.name = "PLAYER 1";
 	}
+	
 	private Vector3 unitCoordinates(int x, int z)
 	{
 		float tileSize = Mathf.Abs (tileCoordinates [0, 0].x - tileCoordinates [1, 0].x);
-		Debug.Log ("tilesize: " + tileSize);
 		return new Vector3 (tileCoordinates [x, z].x, 1.5f, tileCoordinates [x, z].z);
 	}
 
@@ -297,6 +310,7 @@ public class GameManager : MonoBehaviour {
 		if(destination != origin) {
 			Camera.mainCamera.transform.position = Vector3.MoveTowards(origin, destination, Time.deltaTime * ScrollSpeed);
 		}
-		
 	}
+
+
 }

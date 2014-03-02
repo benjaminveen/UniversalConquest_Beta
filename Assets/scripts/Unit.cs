@@ -34,6 +34,7 @@ public class Unit : MonoBehaviour
 
 	public int actionPoints = 2;
 
+	public GameObject explosion;
 	
 	//movement animation
 	public List<Vector3> positionQueue = new List<Vector3>();	
@@ -50,10 +51,11 @@ public class Unit : MonoBehaviour
 	
 	// Update is called once per frame
 	public virtual void Update () {	
-		//rotate when dead
-		if (HP <= 0) {
-			transform.rotation = Quaternion.Euler(new Vector3(90,0,0));
-			transform.renderer.material.color = Color.red;
+		//death animation
+		if (HP <= 0) 
+		{
+			Instantiate (explosion, transform.position, transform.rotation);
+			Destroy (gameObject);
 		}
 	}
 	

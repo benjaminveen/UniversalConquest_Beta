@@ -16,9 +16,23 @@ public class PlayerUnit : Unit {
 		else
 			transform.renderer.material.color = Color.white;
 
+		if (GameManager.instance.currentUnit == this && GameManager.instance.currentPlayer.hasUnit (this))
+		{
+			if(actionPoints > 0 && HP > 0)
+			{
+				if (Input.GetKeyDown ("z"))
+					moveCommand ();
+				if (Input.GetKeyDown ("x"))
+					attackCommand ();
+			}
+		}
 		base.Update();
 	}
-
+	void OnMouseDown()
+	{
+		GameManager.instance.currentUnit = this;
+		GameManager.instance.removeTileHighlights ();
+	}
 	public override void TurnUpdate ()
 	{
 		//highlight
@@ -42,33 +56,45 @@ public class PlayerUnit : Unit {
 		Rect buttonRect = new Rect(0, Screen.height - buttonHeight * 3, buttonWidth, buttonHeight);
 
 		//move button
-		if (GUI.Button(buttonRect, "Move")) {
-			if (!moving) {
-				GameManager.instance.removeTileHighlights();
-				moving = true;
-				attacking = false;
-				GameManager.instance.highlightTilesAt(gridPosition, Color.blue, movementPerActionPoint, false);
-			} else {
-				moving = false;
-				attacking = false;
-				GameManager.instance.removeTileHighlights();
-			}
-		}
+		if (GUI.Button (buttonRect, "Move"))
+			moveCommand ();
 		
 		//attack button
 		buttonRect = new Rect(0, Screen.height - buttonHeight * 2, buttonWidth, buttonHeight);
 		
-		if (GUI.Button(buttonRect, "Attack")) {
-			if (!attacking) {
-				GameManager.instance.removeTileHighlights();
-				moving = false;
-				attacking = true;
-				GameManager.instance.highlightTilesAt(gridPosition, Color.red, attackRange);
-			} else {
-				moving = false;
-				attacking = false;
-				GameManager.instance.removeTileHighlights();
-			}
+		if (GUI.Button (buttonRect, "Attack"))
+			attackCommand ();
+	}
+	private void moveCommand()
+	{
+		if (!moving) 
+		{
+			GameManager.instance.removeTileHighlights();
+			moving = true;
+			attacking = false;
+			GameManager.instance.highlightTilesAt(gridPosition, Color.blue, movementPerActionPoint, false);
+		} 
+		else 
+		{
+			moving = false;
+			attacking = false;
+			GameManager.instance.removeTileHighlights();
+		}
+	}
+	private void attackCommand()
+	{
+		if (!attacking) 
+		{
+			GameManager.instance.removeTileHighlights();
+			moving = false;
+			attacking = true;
+			GameManager.instance.highlightTilesAt(gridPosition, Color.red, attackRange);
+		} 
+		else 
+		{
+			moving = false;
+			attacking = false;
+			GameManager.instance.removeTileHighlights();
 		}
 	}
 	public override void TurnOnGUI () 

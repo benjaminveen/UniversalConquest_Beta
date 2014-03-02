@@ -48,10 +48,14 @@ public class Tile : MonoBehaviour {
 	
 	}
 	
-	void OnMouseEnter() {
+	void OnMouseEnter() 
+	{
+		//transform.renderer.material.color = Color.cyan;
 	}
 	
-	void OnMouseExit() {
+	void OnMouseExit() 
+	{
+		//transform.renderer.material.color = GameManager.instance.tileColor;
 	}
 	
 	
