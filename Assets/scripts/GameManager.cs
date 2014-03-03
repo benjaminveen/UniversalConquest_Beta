@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
 
 	public Unit currentUnit;//currently selected/highlighted unit
 	public Player currentPlayer;//current player taking actions.
-	List<Unit> allUnits = new List<Unit> ();//all active units on the board.
+	public List<Unit> allUnits = new List<Unit> ();//all active units on the board.
 
 	public float tileScale = 2.5f; //scale of board tiles.
 	Vector3[,] tileCoordinates;
@@ -32,6 +32,10 @@ public class GameManager : MonoBehaviour {
 	public int MinCameraHeight = 10;
 
 	public bool gameActive = true; //if game is still going on.
+
+	public GUIText combatText;
+	public GUIText victoryText;
+
 
 	void Awake() {
 		instance = this;
@@ -51,11 +55,13 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 		MoveCamera ();
 		currentPlayer.TurnUpdate ();
+		currentPlayer.Update ();
 		//deselect unit
 		if (Input.GetMouseButtonDown (1)) 
 		{
 			currentUnit = null;
 			removeTileHighlights ();
+			currentPlayer.resetUnits();
 		}
 		//check for winner
 		foreach (Player p in players)
@@ -65,6 +71,7 @@ public class GameManager : MonoBehaviour {
 		//end turn with spacebar
 		if (Input.GetKeyDown ("space"))
 			nextTurn ();
+
 	}
 	void displayWinner()
 	{
@@ -72,7 +79,10 @@ public class GameManager : MonoBehaviour {
 		foreach(Player p in players)
 			if(!p.hasLost())
 				winner = p.name;
-		GUI.Label(new Rect(10f, 10f, 100f, 100f), "" + winner + " has won!" );
+
+		GUI.Box (new Rect (0, 0, Screen.width, Screen.height), "");
+		combatText.text = "";
+		victoryText.text = winner + " has won!";
 	}
 	
 	void OnGUI () {
@@ -156,6 +166,8 @@ public class GameManager : MonoBehaviour {
 	}
 	
 	public void attackWithCurrentPlayer(Tile destTile) {
+		string combat = "";
+
 		if (destTile.transform.renderer.material.color != tileColor && !destTile.impassible && destTile.gridPosition != currentUnit.gridPosition) {
 			
 			Unit target = null;
@@ -183,18 +195,21 @@ public class GameManager : MonoBehaviour {
 						int amountOfDamage = (int)Mathf.Floor(currentUnit.damageBase + Random.Range(0, currentUnit.damageRollSides));
 						
 						target.HP -= amountOfDamage;
-						
-						Debug.Log(currentUnit.unitName + " successfuly hit " + target.unitName + " for " + amountOfDamage + " damage!");
+
+						combat = currentUnit.unitName + " successfuly hit " + target.unitName + " for " + amountOfDamage + " damage!";
+						if(target.HP <= 0)
+							combat += "\n" + currentUnit.unitName + " has TERMINATED " + target.unitName;
 					} else {
-						Debug.Log(currentUnit.unitName + " missed " + target.unitName + "!");
+						combat = (currentUnit.unitName + " missed " + target.unitName + "!");
 					}
 				} else {
-					Debug.Log ("Target is not adjacent!");
+					combat = ("Target is not adjacent!");
 				}
 			}
 		} else {
-			Debug.Log ("destination invalid");
+			combat = ("destination invalid");
 		}
+		combatText.text = combat;
 	}
 	
 	void generateMap() {

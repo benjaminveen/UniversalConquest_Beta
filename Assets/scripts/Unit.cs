@@ -24,9 +24,11 @@ public class Unit : MonoBehaviour
 	public bool moving = false;
 	public bool attacking = false;
 
+	public string unitType = "Fighter";
 	public string unitName = "George";
 	public int HP = 25;
-	
+	public int startHP = 25;
+
 	public float attackChance = 0.75f;
 	public float defenseReduction = 0.15f;
 	public int damageBase = 5;
@@ -56,6 +58,9 @@ public class Unit : MonoBehaviour
 		{
 			Instantiate (explosion, transform.position, transform.rotation);
 			Destroy (gameObject);
+			GameManager.instance.currentPlayer.units.Remove (this);
+			GameManager.instance.allUnits.Remove (this);
+			Debug.Log (GameManager.instance.allUnits);
 		}
 	}
 	
@@ -79,9 +84,6 @@ public class Unit : MonoBehaviour
 	}
 	
 	public void OnGUI() {
-		//display HP
-		Vector3 location = Camera.main.WorldToScreenPoint(transform.position) + Vector3.up * 35;
-		GUI.TextArea(new Rect(location.x, Screen.height - location.y, 30, 20), HP.ToString());
 	}
 
 }

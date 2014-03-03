@@ -35,8 +35,38 @@ public class Player {
 				return false;
 		return true;
 	}
+
+	public void resetUnits()
+	{
+		foreach (Unit u in units) 
+		{
+			u.moving = false;
+			u.attacking = false;
+		}
+	}
 	// Update is called once per frame
-	public virtual void Update () {	
+	public virtual void Update () 
+	{	
+		//get next active unit by pressing C.
+		if (Input.GetKeyDown ("c")) 
+		{
+			Unit u = nextActiveUnit ();
+			if(u != null)
+			{
+				GameManager.instance.currentUnit = u;
+				GameManager.instance.removeTileHighlights();
+				resetUnits ();
+			}
+		}
+	}
+	private Unit nextActiveUnit()
+	{
+		foreach(Unit u in units)
+			if(u != GameManager.instance.currentUnit && u.actionPoints > 0 && u.HP > 0)
+			{
+				return u;
+			}
+		return null;
 	}
 	
 	public virtual void TurnUpdate () {
