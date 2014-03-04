@@ -48,7 +48,7 @@ public class Player {
 	public virtual void Update () 
 	{	
 		//get next active unit by pressing C.
-		if (Input.GetKeyDown ("c")) 
+		if (Input.GetKeyDown ("c") && GameManager.instance.currentPlayer == this) 
 		{
 			Unit u = nextActiveUnit ();
 			if(u != null)
@@ -58,21 +58,29 @@ public class Player {
 				resetUnits ();
 			}
 		}
+
+		//automatic turn end
+		bool turnOver = true;
+		foreach (Unit u in units)
+			if (u.actionPoints > 0)
+				turnOver = false;
+
+		if (turnOver)
+			GameManager.instance.nextTurn ();
 	}
-	private Unit nextActiveUnit()
+	protected Unit nextActiveUnit()
 	{
 		foreach(Unit u in units)
 			if(u != GameManager.instance.currentUnit && u.actionPoints > 0 && u.HP > 0)
-			{
 				return u;
-			}
+
 		return null;
 	}
 	
 	public virtual void TurnUpdate () {
-		//each player has to manually end the turn for now.
 		foreach (Unit unit in units) 
-			unit.TurnUpdate ();
+			if(unit.actionPoints > 0)
+				unit.TurnUpdate ();
 	}
 	
 	public virtual void TurnOnGUI () {

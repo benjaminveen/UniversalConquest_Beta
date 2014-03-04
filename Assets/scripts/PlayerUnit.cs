@@ -103,34 +103,4 @@ public class PlayerUnit : Unit {
 		if(actionPoints > 0 && HP > 0)
 			displayButtons ();
 	}
-	public void OnGUI()
-	{
-		displayHP ();
-		if (GameManager.instance.currentUnit == this)
-			displayHUD ();
-	}
-	void displayHUD()
-	{
-		float boxWidth = Screen.width * .10f;
-		float boxHeight = Screen.height * .25f;
-		float boxX = Screen.width - boxWidth;
-		float boxY = Screen.height - boxHeight;
-		Rect rect = new Rect (boxX, boxY, boxWidth, boxHeight);
-		
-		string content = "Unit type: " + unitType;
-		content += "\n" + "Unit name: " + unitName;
-		content += "\n" + "HP: " + HP + "/" + startHP;
-		content += "\n" + "Attack Range: " + attackRange;
-		content += "\n" + "Attack Chance: " + attackChance;
-		content += "\n" + "Attack base damage: " + damageBase;
-		content += "\n" + "Defense: " + defenseReduction;
-		content += "\n" + "Movement Range: " + movementPerActionPoint;
-		
-		GUI.Box (rect, content);
-	}
-	void displayHP()
-	{
-		Vector3 location = Camera.main.WorldToScreenPoint(transform.position) + Vector3.up * 35;
-		GUI.Label(new Rect(location.x, Screen.height - location.y, 30, 20), HP.ToString());
-	}
 }

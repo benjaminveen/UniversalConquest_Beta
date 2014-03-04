@@ -250,15 +250,15 @@ public class GameManager : MonoBehaviour {
 		player.name = "PLAYER 0";
 
 		//team 1
-		player = new Player ();
+		player = new AIPlayer ();
 		units = new List<Unit> ();
 
-		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (6,4), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
+		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (6,4), Quaternion.Euler(new Vector3()))).GetComponent<AIUnit>();
 		unit.gridPosition = new Vector2(6,4);
 		unit.unitName = "Carl";
 		units.Add (unit);
 		
-		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (5,3), Quaternion.Euler(new Vector3()))).GetComponent<PlayerUnit>();
+		unit = ((GameObject)Instantiate(EnemyUnitPrefab, unitCoordinates (5,3), Quaternion.Euler(new Vector3()))).GetComponent<AIUnit>();
 		unit.gridPosition = new Vector2(5,3);
 		unit.unitName = "Carlton";
 		units.Add (unit);
