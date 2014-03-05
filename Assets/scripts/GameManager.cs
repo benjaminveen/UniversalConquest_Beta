@@ -274,58 +274,38 @@ public class GameManager : MonoBehaviour {
 		return new Vector3 (tileCoordinates [x, z].x, 1.5f, tileCoordinates [x, z].z);
 	}
 
-	private void MoveCamera() {
-		float xpos = Input.mousePosition.x;
-		float ypos = Input.mousePosition.y;
-		float zpos = Input.mousePosition.z;
-		Vector3 movement = new Vector3(0,0,0);
-		bool mouseScroll = false;
+	private void MoveCamera()
+	{		
 		
-		//horizontal camera movement
-		if(xpos >= 0 && xpos < ScrollWidth) {
-			movement.x -= ScrollSpeed;
-			mouseScroll = true;
-		} else if(xpos <= Screen.width && xpos > Screen.width - ScrollWidth) {
-			movement.x += ScrollSpeed;
-			mouseScroll = true;
-		}
-		
-		//vertical camera movement
-		if(ypos >= 0 && ypos < ScrollWidth) {
-			movement.y -= ScrollSpeed;
-			mouseScroll = true;
-		} else if(ypos <= Screen.height && ypos > Screen.height - ScrollWidth) {
-			movement.y += ScrollSpeed;
-			mouseScroll = true;
-		}
-		
-		//make sure movement is in the direction the camera is pointing
-		//but ignore the vertical tilt of the camera to get sensible scrolling
-		movement = Camera.mainCamera.transform.TransformDirection(movement);
-		movement.y = 0;
-		
-		//away from ground movement
-		movement.y -= ScrollSpeed * Input.GetAxis("Mouse ScrollWheel");
-		
-		//calculate desired camera position based on received input
-		Vector3 origin = Camera.mainCamera.transform.position;
-		Vector3 destination = origin;
-		destination.x += movement.x;
-		destination.y += movement.y;
-		destination.z += movement.z;
-		
-		//limit away from ground movement to be between a minimum and maximum distance
-		if(destination.y > MaxCameraHeight) {
-			destination.y = MaxCameraHeight;
-		} else if(destination.y < MinCameraHeight) {
-			destination.y = MinCameraHeight;
-		}
-		
-		//if a change in position is detected perform the necessary update
-		if(destination != origin) {
-			Camera.mainCamera.transform.position = Vector3.MoveTowards(origin, destination, Time.deltaTime * ScrollSpeed);
+		Vector3 newPosition = Camera.mainCamera.transform.position;
+	if (newPosition.x <= mapSize) {
+		if (Input.mousePosition.x >= Screen.width - ScrollWidth) {            
+			// Move the camera            
+			Camera.mainCamera.transform.position += Camera.mainCamera.transform.right * Time.deltaTime * ScrollSpeed;            
 		}
 	}
+	
+	if(newPosition.x >= -mapSize){            
+		if ( Input.mousePosition.x <= 0 + ScrollWidth )                
+		{                
+			// Move the camera                
+			Camera.mainCamera.transform.position -= Camera.mainCamera.transform.right * Time.deltaTime * ScrollSpeed;                
+		}        
+	}
+	if (newPosition.z <= mapSize) {
+		if (Input.mousePosition.y >= Screen.height - ScrollWidth) {            
+			// Move the camera            
+			Camera.mainCamera.transform.position += Camera.mainCamera.transform.up * Time.deltaTime * ScrollSpeed;            
+		}
+	}
+	
+	if (newPosition.z >= -mapSize) {
+		if (Input.mousePosition.y <= 0 + ScrollWidth) {            
+			// Move the camera            
+			Camera.mainCamera.transform.position -= Camera.mainCamera.transform.up * Time.deltaTime * ScrollSpeed;            
+		}
+	}
+}
 
 
 }
