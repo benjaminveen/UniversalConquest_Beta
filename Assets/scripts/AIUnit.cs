@@ -19,8 +19,6 @@ public class AIUnit : Unit
 		base.Update();
 	}
 
-	
-
 
 	public override void TurnUpdate ()
 	{
@@ -83,5 +81,4 @@ public class AIUnit : Unit
 			}
 		}
 	}
-
 }

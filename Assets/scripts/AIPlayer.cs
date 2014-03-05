@@ -16,24 +16,29 @@ public class AIPlayer : Player
 		bool turnOver = true;
 		foreach (Unit u in units)
 			if (u.actionPoints > 0)
+			{
 				turnOver = false;
+			}
+				
 		
 		if (turnOver)
 			GameManager.instance.nextTurn ();
 	}
 
-	public override void TurnUpdate()
+	//only one unit acts at a time.
+	int currentUnit = 0;
+	public override void TurnUpdate ()
 	{
-		foreach (Unit unit in units) 
-			if (unit.actionPoints > 0) 
-			{
-				unit.TurnUpdate ();
-				turnDelay ();
-			}
-	}
-	IEnumerator turnDelay()
-	{
-		// Waits an amount of time
-		yield return new WaitForSeconds (aiTurnDelay);
+		if(units[currentUnit].actionPoints > 0)
+			units[currentUnit].TurnUpdate();
+		else
+		{
+			if(currentUnit + 1 == units.Count)
+				currentUnit = 0;
+			else
+				currentUnit++;
+			//pause after a unit has completed its full action.
+			System.Threading.Thread.Sleep (1000);
+		}
 	}
 }

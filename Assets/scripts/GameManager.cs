@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour {
 				gameActive = false;
 
 		//end turn with spacebar
-		if (Input.GetKeyDown ("space"))
+		if (Input.GetKeyDown ("space") && currentPlayer.GetType () != typeof(AIPlayer))
 			nextTurn ();
 
 	}
@@ -145,9 +145,6 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 	}
- 	
-
-
 	public void moveCurrentPlayer(Tile destTile) {
 		if (destTile.transform.renderer.material.color != tileColor && !destTile.impassible && currentUnit.positionQueue.Count == 0) {
 			removeTileHighlights();
@@ -159,7 +156,6 @@ public class GameManager : MonoBehaviour {
 				Debug.Log("(" + currentUnit.positionQueue[currentUnit.positionQueue.Count - 1].x + "," + currentUnit.positionQueue[currentUnit.positionQueue.Count - 1].y + ")");
 			}			
 			currentUnit.gridPosition = destTile.gridPosition;
-
 		} else {
 			Debug.Log ("destination invalid");
 		}
@@ -202,6 +198,7 @@ public class GameManager : MonoBehaviour {
 					} else {
 						combat = (currentUnit.unitName + " missed " + target.unitName + "!");
 					}
+					System.Threading.Thread.Sleep (1000);
 				} else {
 					combat = ("Target is not adjacent!");
 				}

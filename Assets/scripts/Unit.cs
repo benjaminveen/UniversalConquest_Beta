@@ -105,10 +105,11 @@ public class Unit : MonoBehaviour
 	}
 	void displayHUD()
 	{
-		float boxWidth = Screen.width * .10f;
-		float boxHeight = Screen.height * .25f;
-		float boxX = Screen.width - boxWidth;
-		float boxY = Screen.height - boxHeight;
+		float offset = 20f;
+		float boxWidth = Screen.width * .18f;
+		float boxHeight = Screen.height * .28f;
+		float boxX = Screen.width - boxWidth - offset;
+		float boxY = Screen.height - boxHeight - offset;
 		Rect rect = new Rect (boxX, boxY, boxWidth, boxHeight);
 		
 		string content = "Unit type: " + unitType;
