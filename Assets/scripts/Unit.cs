@@ -69,8 +69,22 @@ public class Unit : MonoBehaviour
 	}
 	void OnMouseDown()
 	{
-		GameManager.instance.currentUnit = this;
-		GameManager.instance.removeTileHighlights ();
+		//click to attack
+		if(GameManager.instance.currentUnit != this //cant attack self
+		   && !GameManager.instance.currentPlayer.hasUnit (this)//no friendly fire
+		   && GameManager.instance.currentUnit.attacking //has to be attacking obviously
+		   //can only attack within range of its currently painted attack tiles
+		   && GameManager.instance.map[(int)gridPosition.x][(int)gridPosition.y].transform.renderer.material.color == Color.red
+		   )
+		{
+			GameManager.instance.attackWithCurrentPlayer(GameManager.instance.map[(int)gridPosition.x][(int)gridPosition.y]);
+		}
+		else
+		{
+			GameManager.instance.currentUnit = this;
+			GameManager.instance.removeTileHighlights ();
+			GameManager.instance.currentPlayer.resetUnits ();
+		}
 	}
 	public virtual void TurnOnGUI () 
 	{
