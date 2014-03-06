@@ -22,7 +22,8 @@ public class AIUnit : Unit
 
 	public override void TurnUpdate ()
 	{
-		GameManager.instance.currentUnit = this;
+		if(this != null)
+			GameManager.instance.currentUnit = this;
 		if (positionQueue.Count > 0) {
 			transform.position += (positionQueue[0] - transform.position).normalized * moveSpeed * Time.deltaTime;
 			

@@ -28,12 +28,7 @@ public class PlayerUnit : Unit {
 		}
 		base.Update();
 	}
-	void OnMouseDown()
-	{
-		GameManager.instance.currentUnit = this;
-		GameManager.instance.removeTileHighlights ();
-		GameManager.instance.currentPlayer.resetUnits ();
-	}
+
 	public override void TurnUpdate ()
 	{
 		//highlight

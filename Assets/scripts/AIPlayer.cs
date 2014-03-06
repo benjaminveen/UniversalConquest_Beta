@@ -16,9 +16,7 @@ public class AIPlayer : Player
 		bool turnOver = true;
 		foreach (Unit u in units)
 			if (u.actionPoints > 0)
-			{
 				turnOver = false;
-			}
 				
 		
 		if (turnOver)
@@ -29,16 +27,16 @@ public class AIPlayer : Player
 	int currentUnit = 0;
 	public override void TurnUpdate ()
 	{
+
+		if (currentUnit >= units.Count)
+			currentUnit = 0;
+
 		if(units[currentUnit].actionPoints > 0)
 			units[currentUnit].TurnUpdate();
 		else
 		{
-			if(currentUnit + 1 == units.Count)
-				currentUnit = 0;
-			else
+			if(units.Count > 1)
 				currentUnit++;
-			//pause after a unit has completed its full action.
-			System.Threading.Thread.Sleep (1000);
 		}
 	}
 }

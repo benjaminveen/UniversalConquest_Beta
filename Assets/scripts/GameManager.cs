@@ -117,7 +117,7 @@ public class GameManager : MonoBehaviour {
 		else 
 			currentPlayerIndex = 0;
 		currentPlayer = players [currentPlayerIndex];
-		Debug.Log ("Now it's player " + currentPlayer.name + "'s turn");
+		combatText.text = "Now it's " + currentPlayer.name + "'s turn";
 	}
 
 	public void highlightTilesAt(Vector2 originLocation, Color highlightColor, int distance) {
@@ -198,7 +198,9 @@ public class GameManager : MonoBehaviour {
 					} else {
 						combat = (currentUnit.unitName + " missed " + target.unitName + "!");
 					}
-					System.Threading.Thread.Sleep (1000);
+					//pause after AI unit attacks
+					if(currentUnit.GetType () == typeof(AIUnit))
+						System.Threading.Thread.Sleep (750);
 				} else {
 					combat = ("Target is not adjacent!");
 				}

@@ -37,7 +37,7 @@ public class Unit : MonoBehaviour
 	public int actionPoints = 2;
 
 	public GameObject explosion;
-	
+
 	//movement animation
 	public List<Vector3> positionQueue = new List<Vector3>();	
 	//
@@ -57,10 +57,11 @@ public class Unit : MonoBehaviour
 		if (HP <= 0) 
 		{
 			Instantiate (explosion, transform.position, transform.rotation);
-			Destroy (gameObject);
-			GameManager.instance.currentPlayer.units.Remove (this);
+			foreach(Player p in GameManager.instance.players)
+				if(p.hasUnit (this))
+					p.units.Remove (this);
 			GameManager.instance.allUnits.Remove (this);
-			Debug.Log (GameManager.instance.allUnits);
+			Destroy (gameObject);
 		}
 	}
 	
@@ -120,7 +121,7 @@ public class Unit : MonoBehaviour
 		content += "\n" + "Attack base damage: " + damageBase;
 		content += "\n" + "Defense: " + defenseReduction;
 		content += "\n" + "Movement Range: " + movementPerActionPoint;
-		
+
 		GUI.Box (rect, content);
 	}
 	void displayHP()
